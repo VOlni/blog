@@ -140,7 +140,7 @@ if "chunk_%s" % chunk_index in clients_names:
 
 Whole code:
 
-{% highlight python %}
+```python
 for chunk_index in range(CHUNKS_COUNT):
     # let's see if we already processed this chunk of data
     bit = redis_client.getbit("chunks", chunk_index)
@@ -181,7 +181,7 @@ for chunk_index in range(CHUNKS_COUNT):
     # we send data to redis.
     redis_pipeline.setbit("chunks", chunk_index, 1)
     redis_pipeline.execute()
-{% highlight %}
+```
 
 Now you can run this script in multiple processes and it will be super "safe" and fast. 
 
