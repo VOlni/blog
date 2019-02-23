@@ -4,12 +4,12 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
 
-### More Information
+Software developer at http://Doist.com. <br>
+Stairs founder http://stairspy.com/
 
-A place to include any other types of information that you'd like to include about yourself.
+
 
 ### Contact me
 
-[email@domain.com](mailto:email@domain.com)
+[oleg.ivye@gmail.com](oleg.ivye@gmail.com)
