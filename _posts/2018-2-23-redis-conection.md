@@ -29,7 +29,7 @@ What does it mean "super safe"? We should not:
 
 I will try to explain my solution based on redis connection name:
 
-#### Step1. Split table by [batches](https://en.wikipedia.org/wiki/Batch_processing).
+### Step1. Split table by [batches](https://en.wikipedia.org/wiki/Batch_processing).
 
 Let's split whole table by bathes/chunks and then iterate over table rows in batch and
 push everything (in one commit) to redis list:
@@ -67,7 +67,7 @@ With "redis pipeline" seems like code could meet all requirements, BUT:
 - What if something happened inside cursor iteration? The process had beed stopped and
 data not delivered to redis. When we decide to "repeat" reading process for this batch we will not aware of what batch we should "repeat"
 
-#### Step2. Tag processed batches. 
+### Step2. Tag processed batches. 
 
 Let's try to solve the problems above using [redis bitmap](https://redis.io/commands/SETBIT). We could set bit to 1 if batches had been processed and 0 otherwise.
 
@@ -109,7 +109,7 @@ we are ready to run this script using multiple processes. BUT :)
 If we run this script simultaneously `chunk_index` for two processes will be set to 0 -
 and these processes will get `0` from `redis_client.getbit` and will start to process this chunk **simultaneously** - which will generate data duplication. (You could think about random - but it's not a 100% solution at all).
 
-#### Step3. Time for redis connection name. 
+### Step3. Time for redis connection name. 
 
 What if we could "lock" some chunks and do not process them simultaneously. Here how `redis connection name` could help as to "lock" smth:
 
