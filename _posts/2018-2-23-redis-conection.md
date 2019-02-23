@@ -189,11 +189,15 @@ for chunk_index in range(CHUNKS_COUNT):
 
 Now you can run this script in multiple processes and it will be super "safe" and fast. 
 
-**Quite important to know** it will work only in case if your process has one thread and one redis connection which used for naming, otherwise there is a chance that client name will be overwrite.
+Here an example how it works in [Stairs](https://github.com/electronick1/stairs/blob/master/stairs/core/producer/adapter/iter_worker_adapter/jobs_manager.py#L29)
+
+**Quite important to know**  that it will work only in case if your process has one thread and one redis connection which used for naming, otherwise there is a chance that client name will be overwritten.
 
 Why lua script didn't work here?
 
 Lua script it's a way to block some redis key not a client itself. In same way you could store each batch as a `redis key` and use [redis watch](https://redis.io/commands/watch) command to block **simultaneous** writing - but it will be less afficient :(
+
+
 
 If you have any questions/comments/suggestions please feel free to reach me. 
 
