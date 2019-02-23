@@ -45,9 +45,10 @@ for chunk_index in range(CHUNKS_COUNT):
     r_id = CHUNK_SIZE * (chunk_index + 1)
 
     # reading batch of data from table
-    mysql_cursor.execute("SELECT * "
-                        "FROM table "
-                        "WHERE id >= %s and id < %s" % (l_id, r_id))
+    mysql_cursor.execute(
+        "SELECT * "
+        "FROM table "
+        "WHERE id >= %s and id < %s" % (l_id, r_id))
 
     # it's important to use pipeline here, because in case
     # of failure during reading process some tasks could be left
@@ -88,9 +89,10 @@ for chunk_index in range(CHUNKS_COUNT):
 
     redis_pipeline = redis_client.pipeline()
 
-    mysql_cursor.execute("SELECT * "
-                            "FROM table "
-                            "WHERE id >= %s and id < %s" % (l_id, r_id))
+    mysql_cursor.execute(
+        "SELECT * "
+        "FROM table "
+        "WHERE id >= %s and id < %s" % (l_id, r_id))
 
     for row in mysql_cursor:
         redis_pipeline.lpush("rows", row)
@@ -131,13 +133,14 @@ Now we could just check if current chunk already "booked" by someone:
 
 ```python
 # Continue if current chunk already "booked" by some other process
-if "chunk_%s" % chunk_index in [c['name'] for c in client_list]:
+clients_names = [c['name'] for c in client_list]
+if "chunk_%s" % chunk_index in clients_names:
     continue
 ```
 
 Whole code:
 
-```python
+{% highlight python %}
 for chunk_index in range(CHUNKS_COUNT):
     # let's see if we already processed this chunk of data
     bit = redis_client.getbit("chunks", chunk_index)
@@ -157,7 +160,8 @@ for chunk_index in range(CHUNKS_COUNT):
     client_list, _ = redis_pipeline.execute()
 
     # Continue if current chunk already "booked" by some other process
-    if "chunk_%s" % chunk_index in [c['name'] for c in client_list]:
+    clients_names = [c['name'] for c in client_list]
+    if "chunk_%s" % chunk_index in clients_names:
         continue
 
     l_id = CHUNK_SIZE * chunk_index
@@ -165,9 +169,10 @@ for chunk_index in range(CHUNKS_COUNT):
 
     redis_pipeline = redis_client.pipeline()
 
-    mysql_cursor.execute("SELECT * "
-                            "FROM table "
-                            "WHERE id >= %s and id < %s" % (l_id, r_id))
+    mysql_cursor.execute(
+        "SELECT * "
+        "FROM table "
+        "WHERE id >= %s and id < %s" % (l_id, r_id))
 
     for row in mysql_cursor:
         redis_pipeline.lpush("rows", row)
@@ -176,7 +181,7 @@ for chunk_index in range(CHUNKS_COUNT):
     # we send data to redis.
     redis_pipeline.setbit("chunks", chunk_index, 1)
     redis_pipeline.execute()
-```
+{% highlight %}
 
 Now you can run this script in multiple processes and it will be super "safe" and fast. 
 
