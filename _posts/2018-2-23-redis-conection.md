@@ -6,10 +6,10 @@ title: How to prevent data loss with Redis.
 Sometimes we could miss something small but quite powerful and useful in some projects.
 For me it was "redis connection name" - which for first look seems like smth super specific and just for meta information.
 
-Here I will try explain how redis connection name could help you to process a lot of data
+Here I will try to explain how redis connection name could help you to process a lot of data
 in super "safe" mode.
 
-[Redis set connection name](https://redis.io/commands/client-setname) - it's a way to specified some name/key/id to your redis connection. Plus, you can extract all clients info using  [client list](https://redis.io/commands/client-list) command.
+[Redis set connection name](https://redis.io/commands/client-setname) - it's a way to specify some name/key/id to your redis connection. Plus, you can extract all clients info using  [client list](https://redis.io/commands/client-list) command.
 
 Together these commands can be useful for analytic porpose. For example in Todoist we have redis [workers](https://en.wikipedia.org/wiki/Job_(computing\)) for background tasks. And using redis connection name we could understand amount of processes which producing and consuming jobs.
 
@@ -190,5 +190,11 @@ for chunk_index in range(CHUNKS_COUNT):
 Now you can run this script in multiple processes and it will be super "safe" and fast. 
 
 **Quite important to know** it will work only in case if your process has one thread and one redis connection which used for naming, otherwise there is a chance that client name will be overwrite.
+
+- Why lua script didn't work here?
+
+Lua script it's a way to block some redis key not a client itself. In same way you could store each batch as a `redis key` and use [redis watch](https://redis.io/commands/watch) command to block **simultaneous** writing - but it will be less afficient :(
+
+If you have any questions/comments/suggestions please feel free to reach me. 
 
 Enjoy :)
