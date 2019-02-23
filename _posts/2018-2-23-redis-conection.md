@@ -71,7 +71,7 @@ data not delivered to redis. When we decide to "repeat" reading process for this
 
 ### Step2. Tag processed batches. 
 
-Let's try to solve the problems above using [redis bitmap](https://redis.io/commands/SETBIT). We could set bit to 1 if batches had been processed and 0 otherwise.
+Let's try to solve the problems above using [redis bitmap](https://redis.io/commands/SETBIT). We could set bit to 1 if batches had processed and 0 otherwise.
 
 {% highlight python %}
 for chunk_index in range(CHUNKS_COUNT):
