@@ -38,7 +38,8 @@ push everything (in one commit) to redis list:
 ![_config.yml]({{ site.baseurl }}/images/redis_connection_3.jpg)
 
 
-```python
+
+{% highlight python %}
 for chunk_index in range(CHUNKS_COUNT):
     # generate batch "borders" based on chunk index
     l_id = CHUNK_SIZE * chunk_index
@@ -58,7 +59,7 @@ for chunk_index in range(CHUNKS_COUNT):
     for row in mysql_cursor:
         redis_pipeline.lpush("rows", row)
     redis_pipeline.execute()
-```
+{% endhighlight %}
 
 With "redis pipeline" seems like code could meet all requirements, BUT:
 
@@ -72,7 +73,7 @@ data not delivered to redis. When we decide to "repeat" reading process for this
 
 Let's try to solve the problems above using [redis bitmap](https://redis.io/commands/SETBIT). We could set bit to 1 if batches had been processed and 0 otherwise.
 
-```python
+{% highlight python %}
 for chunk_index in range(CHUNKS_COUNT):
     # let's see if we already processed this chunk of data
     bit = redis_client.getbit("chunks", chunk_index)
@@ -101,7 +102,7 @@ for chunk_index in range(CHUNKS_COUNT):
     # we send data to redis.
     redis_pipeline.setbit("chunks", chunk_index, 1)
     redis_pipeline.execute()
-```
+{% endhighlight %}
 
 
 Ok, now this looks much better! If something failed in "cursor" iterator we could 
