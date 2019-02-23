@@ -115,14 +115,15 @@ and these processes will get `0` from `redis_client.getbit` and will start to pr
 
 What if we could "lock" some chunks and do not process them simultaneously. Here how `redis connection name` could help as to "lock" smth:
 
-```python
+
+{% highlight python %}
 redis_pipeline = redis_client.pipeline()
 # getting all redis clients
 redis_pipeline.client_list()
 # set current connection name (specified as a chunk id)
 redis_pipeline.client_setname("chunk_%s" % chunk_index)
 client_list, _ = redis_pipeline.execute()
-```
+{% endhighlight %}
 
 What happened there?
 
@@ -131,12 +132,13 @@ What happened there?
 
 Now we could just check if current chunk already "booked" by someone:
 
-```python
-# Continue if current chunk already "booked" by some other process
+{% highlight python %}
+# Continue if current chunk already "booked" by 
+# some other process
 clients_names = [c['name'] for c in client_list]
 if "chunk_%s" % chunk_index in clients_names:
     continue
-```
+{% endhighlight %}
 
 Whole code:
 
@@ -159,7 +161,8 @@ for chunk_index in range(CHUNKS_COUNT):
     redis_pipeline.client_setname("chunk_%s" % chunk_index)
     client_list, _ = redis_pipeline.execute()
 
-    # Continue if current chunk already "booked" by some other process
+    # Continue if current chunk already "booked" by some
+    # other process
     clients_names = [c['name'] for c in client_list]
     if "chunk_%s" % chunk_index in clients_names:
         continue
