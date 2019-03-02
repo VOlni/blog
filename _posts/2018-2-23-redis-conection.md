@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Redis clients "lock", for distributed calculations.
+title: Locking Redis clients for distributed calculations.
 ---
 
 Sometimes we could miss something small but quite powerful and useful in some project.
