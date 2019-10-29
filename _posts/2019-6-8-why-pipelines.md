@@ -163,8 +163,8 @@ def super_powerful_worker(input_data):
 		save_analytics_to_database(analytics)
 ```
 
-Your worker will try to repeat this function, what happened next?<br> 
-Yeah you will try to commit analytics to database once again 
+Your worker will try to repeat this function, what happened next?<br><br>
+Yeah, you will try to commit analytics to database once again 
 and make another call to a worker (which will duplicate your data) 😱  <br>
 Also, note that this worker will try to repeat this function multiple times
 and in the end you will have uncontrollable copies of your data and broken db
@@ -299,9 +299,10 @@ BUT. We still have problems with database :(
 And here we solve side effects problem only partially,
 But please, don’t cry. It’s possible to solve this completely(!) 
 
-Check out how to do that in [ETL article]() . 
-Spoiler solution based on data pipelines,  but because of separation between  
-data transformations (Transform) and changing global state (Load) we can easily 
+Basically using [ETL concept](http://olegivye.com/why-etl/). 
+ETL concept allows you to separate "Transformation" parts and "Load" part and
+gently wrapping them in isolated enviroment.  
+Because of this separation between data transformations (Transform) and changing global state (Load) we can easily 
 solve this problem. 
 
 As a result we will have something like functional programming but 
@@ -338,7 +339,7 @@ If you go to the Ruby or Python main page you will find something like that:
 
 This is not something which related to current data pipelines solutions. 
 
-That’s why year ago I started project called [Stairs](). 
+That’s why year ago I started project called [Stairs](http://stairspy.com/). 
 Which is a very simple and efficient solution around streaming services 
 and written fully on python. The main goal of Stairs is to solve a lot of different 
 tasks as simple as possible using all power of Streaming + data pipelines + ETL concept. 
