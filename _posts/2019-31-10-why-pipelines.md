@@ -3,7 +3,6 @@ layout: post
 title: Why we have data pipelines today.
 ---
 
-####[Under development]
 
 ####Plan:
 
