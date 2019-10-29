@@ -1,10 +1,11 @@
 ---
 layout: post
 title: Why we have data pipelines today.
+published: false
 ---
 
 
-####Plan:
+#### Plan:
 
 - Why Data Pipelines is a next iteration of streaming/queues/workers? 
 - Why streaming/messages data processing are bad today?
@@ -13,7 +14,7 @@ title: Why we have data pipelines today.
  
 
 
-###Why Data Pipelines is a next iteration of streaming/queues/workers?
+### Why Data Pipelines is a next iteration of streaming/queues/workers?
 
 I would like to start from core ideas and skip long introduction to 
 queues/workers/streaming approach (Hope it will safe your time,  
@@ -41,7 +42,7 @@ I will try to explain how Data pipelines as a concept could be a next iteration
 for using "Streaming" services and process sequence of events. <br>
 Now let's see why we need to make "a next iteration" for "Streaming" services: 
 
-###Why streaming/messages data processing are bad today?
+### Why streaming/messages data processing are bad today?
 
 
 I’m a big fun of "Streaming" approach, but it has some very painful issues
@@ -129,16 +130,16 @@ In case of "Streaming" approach everything much worse.
 
 Here an example:
 
-```
+```python
 app = Celery()
 
 @app.task
 def super_powerful_worker(input_data):
-		analytics = calculate_analytics(input_data)
-		
-		save_input_data_to_database(input_data)
-		next_super_powerful_worker.delay(analytics)
-		save_analytics_to_database(analytics)
+    analytics = calculate_analytics(input_data)
+    
+    save_input_data_to_database(input_data)
+    next_super_powerful_worker.delay(analytics)
+    save_analytics_to_database(analytics)
 
 @app.task
 def super_powerful_worker(input_data):
@@ -150,17 +151,17 @@ What is the problem here?
 
 BUT, If something happened in the middle, like this:
 
-```
+```python
 @app.task
 def super_powerful_worker(input_data):
-		analytics = calculate_analytics(input_data)
-		
-		save_input_data_to_database(input_data)
-		next_super_powerful_worker.delay(analytics)
+    analytics = calculate_analytics(input_data)
+    
+    save_input_data_to_database(input_data)
+    next_super_powerful_worker.delay(analytics)
 
-		raise RuntimeError("eror here, oops")
+    raise RuntimeError("eror here, oops")
 
-		save_analytics_to_database(analytics)
+    save_analytics_to_database(analytics)
 ```
 
 Your worker will try to repeat this function, what happened next?<br><br>
@@ -190,25 +191,26 @@ How to solve this? - Make one db transaction only in a separate worker.
 And call next workers only in the end of "everything".
 
 Example:
-```
+
+```python
 app = Celery()
 
 @app.task
 def super_powerful_worker(input_data):
-		analytics = calculate_analytics(input_data)
+    analytics = calculate_analytics(input_data)
 		
-		# only in the end of the function, and we should be
-		# 100% sure that no workers called in 
-		# calculate_analytics
-		with celery.Transaction():
-			commit_to_database.delay(analytics, input_data)
-			next_super_powerful_worker.delay(analytics)
+    # only in the end of the function, and we should be
+    # 100% sure that no workers called in 
+    # calculate_analytics
+    with celery.Transaction():
+        commit_to_database.delay(analytics, input_data)
+        next_super_powerful_worker.delay(analytics)
 
 @app.task
 def commit_to_database(analytics, input_data):
-		with db.Transaction():
-			save_input_data_to_database(input_data)
-			save_analytics_to_database(analytics)
+    with db.Transaction():
+        save_input_data_to_database(input_data)
+        save_analytics_to_database(analytics)
 
 @app.task
 def super_powerful_worker(input_data):
@@ -220,7 +222,7 @@ But yeah, this is not something easy to support in big projects.
 
 __*And that’s why we have Data pipelines today*__
 
-###Why data pipelines? 
+### Why data pipelines? 
 
 Data pipelines - it’s a way to connect your workers in the right way.  
 
